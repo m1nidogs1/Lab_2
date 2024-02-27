@@ -7,13 +7,14 @@ void consistent2(int n)
     int** a = new int*[n];
     int** b = new int*[n];
     int** res = new int*[n];
+    start_time = omp_get_wtime();
     for (int i = 0; i < n; i++)
     {
         a[i] = new int[n];
         b[i] = new int[n];
         res[i] = new int[n];
     }
-    start_time = omp_get_wtime();
+    
 
     for (int i = 0; i < n; i++)
         for (int j=0;j<n;j++)
@@ -29,6 +30,7 @@ void consistent2(int n)
         *(*(res + i) + j) = *(*(a + i) + j) * *(*(b + i) + j);
         *(*(res + i) + j) = *(*(a + i) + j) / *(*(b + i) + j);
         }
+    end_time = omp_get_wtime();
     for (int i = 0; i < n; i++)
     {
         delete a[i];
@@ -38,7 +40,7 @@ void consistent2(int n)
     delete a;
     delete b;
     delete res;
-    end_time = omp_get_wtime();
+    
     printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", end_time - start_time);
 }
 void parallel(int n, int k)
@@ -47,6 +49,7 @@ void parallel(int n, int k)
     int** a = new int* [n];
     int** b = new int* [n];
     int** res = new int* [n];
+    start_time = omp_get_wtime();
 #pragma omp parallel num_threads(k)
     {
 #pragma omp for
@@ -56,10 +59,10 @@ void parallel(int n, int k)
             b[i] = new int[n];
             res[i] = new int[n];
         }
-        start_time = omp_get_wtime();
+        
 #pragma omp for
         for (int i = 0; i < n; i++)
-#pragma omp for
+
             for (int j = 0; j < n; j++)
             {
                 *(*(a + i) + j) = rand() % 100 + 1;
@@ -67,7 +70,6 @@ void parallel(int n, int k)
             }
 #pragma omp for
         for (int i = 0; i < n; i++)
-#pragma omp for
             for (int j = 0; j < n; j++)
             {
                 *(*(res + i) + j) = *(*(a + i) + j) + *(*(b + i) + j);
@@ -76,21 +78,23 @@ void parallel(int n, int k)
                 *(*(res + i) + j) = *(*(a + i) + j) / *(*(b + i) + j);
             }
     }
+    end_time = omp_get_wtime();
     for (int i = 0; i < n; i++)
     {
         delete a[i];
         delete b[i];
         delete res[i];
     }
+    
     delete a;
     delete b;
     delete res;
-    end_time = omp_get_wtime();
+    
     printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, k);
 }
 void Task4()
 {
-    int n = 100000;
+    int n = 30000;
     printf("========== Задача #4 ==========\n");
     consistent2(n);
     parallel(n, 1);

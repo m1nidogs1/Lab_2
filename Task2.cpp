@@ -44,10 +44,11 @@ void Qsort_parallel(int a[], int L, int R, int k)
             if (i < R) Qsort_parallel(a, i, R, k);
         }
     }
+#pragma omp taskwait
 }
 void Task_2()
 {
-    int n = 10000000;
+    int n = 100000000;
     int* a1 = new int[n];
 
     printf("========== Задача #2 ==========\n");
@@ -66,15 +67,17 @@ void Task_2()
     Qsort_constent(a2, 0, n - 1);
     end_time = omp_get_wtime();
     printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", end_time - start_time);
-    start_time = omp_get_wtime();
+    
 #pragma omp parallel shared(a1) num_threads(1)
     {
 #pragma omp single nowait
         {
+            start_time = omp_get_wtime();
             Qsort_parallel(a1, 0, n - 1, 1);
+            end_time = omp_get_wtime();
         }
     }
-    end_time = omp_get_wtime();
+   
     printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, 1);
 
 #pragma omp parallel shared(a3) num_threads(4)
@@ -88,12 +91,14 @@ void Task_2()
     }
 
     printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, 4);
-    start_time = omp_get_wtime();
+  
 #pragma omp parallel shared(a4) num_threads(8)
     {
 #pragma omp single nowait
         {
+            start_time = omp_get_wtime();
             Qsort_parallel(a4, 0, n - 1, 1);
+            end_time = omp_get_wtime();
         }
     }
     end_time = omp_get_wtime();
