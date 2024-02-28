@@ -47,34 +47,40 @@ void parallel(int n, int k)
     int** a = new int* [n];
     int** b = new int* [n];
     int** res = new int* [n];
-#pragma omp parallel num_threads(k)
-    {
-#pragma omp for
-        for (int i = 0; i < n; i++)
-        {
-            a[i] = new int[n];
-            b[i] = new int[n];
-            res[i] = new int[n];
-        }
+
+        
+            for (int i = 0; i < n; i++)
+            {
+                a[i] = new int[n];
+                b[i] = new int[n];
+                res[i] = new int[n];
+            }
+        
         start_time = omp_get_wtime();
-#pragma omp for
-        for (int i = 0; i < n; i++)
-#pragma omp for
-            for (int j = 0; j < n; j++)
+        
+            for (int i = 0; i < n; i++)
             {
-                *(*(a + i) + j) = rand() % 100 + 1;
-                *(*(b + i) + j) = rand() % 100 + 1;
+                for (int j = 0; j < n; j++)
+                {
+                    *(*(a + i) + j) = rand() % 100 + 1;
+                    *(*(b + i) + j) = rand() % 100 + 1;
+                }
             }
-#pragma omp for
-        for (int i = 0; i < n; i++)
-#pragma omp for
-            for (int j = 0; j < n; j++)
+#pragma omp parallel num_threads(k)
             {
-                *(*(res + i) + j) = *(*(a + i) + j) + *(*(b + i) + j);
-                *(*(res + i) + j) = *(*(a + i) + j) - *(*(b + i) + j);
-                *(*(res + i) + j) = *(*(a + i) + j) * *(*(b + i) + j);
-                *(*(res + i) + j) = *(*(a + i) + j) / *(*(b + i) + j);
+#pragma omp for
+        
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    *(*(res + i) + j) = *(*(a + i) + j) + *(*(b + i) + j);
+                    *(*(res + i) + j) = *(*(a + i) + j) - *(*(b + i) + j);
+                    *(*(res + i) + j) = *(*(a + i) + j) * *(*(b + i) + j);
+                    *(*(res + i) + j) = *(*(a + i) + j) / *(*(b + i) + j);
+                }
             }
+        
     }
     for (int i = 0; i < n; i++)
     {
@@ -90,9 +96,9 @@ void parallel(int n, int k)
 }
 void Task4()
 {
-    int n = 100000;
+    int n = 10000*2;
     printf("========== Задача #4 ==========\n");
-    consistent2(n);
+    //consistent2(n);
     parallel(n, 1);
     parallel(n, 4);
     parallel(n, 8);
