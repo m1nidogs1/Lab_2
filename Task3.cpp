@@ -1,7 +1,7 @@
 #include <iostream>
 #include <omp.h>
 
-void consistent(int n)
+double consistent(int n)
 {
     double start_time, end_time;
     int* a = new int[n];
@@ -23,9 +23,10 @@ void consistent(int n)
     }
 
     end_time = omp_get_wtime();
-    printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", end_time - start_time);
+    return end_time - start_time;
+    //printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", end_time - start_time);
 }
-void parall(int n, int k)
+double parall(int n, int k)
 {
     double start_time, end_time;
 
@@ -51,14 +52,33 @@ void parall(int n, int k)
         }
     }
     end_time = omp_get_wtime();
-    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, k);
+    return end_time - start_time;
+    //printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, k);
 }
 void Task3()
 {
     int n = 100000000;
+    int res = 10000;
+    double avg_time = 0;
     printf("========== Задача #3 ==========\n");
-    consistent(n);
-    parall(n, 1);
-    parall(n, 4);
-    parall(n, 8);
+    for (int i=0;i<res;i++)
+        avg_time += consistent(n);
+    avg_time /= res;
+    printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", avg_time);
+    avg_time = 0;
+    for (int i = 0; i < res; i++)
+        avg_time += parall(n, 1);
+    avg_time /= res;
+    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", avg_time, 1);
+    avg_time = 0;
+    for (int i = 0; i < res; i++)
+            avg_time += parall(n, 4);
+    avg_time /= res;
+    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", avg_time, 4);
+    avg_time = 0;
+    for (int i = 0; i < res; i++)
+        avg_time += parall(n, 8);
+    avg_time /= res;
+    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", avg_time, 8);
+    
 }

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <omp.h>
 
-void consistent2(int n)
+double consistent2(int n)
 {
     double start_time, end_time;
     int** a = new int*[n];
@@ -39,10 +39,10 @@ void consistent2(int n)
     delete a;
     delete b;
     delete res;
-    
-    printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", end_time - start_time);
+    return end_time - start_time;
+    //printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", end_time - start_time);
 }
-void parallel(int n, int k)
+double parallel(int n, int k)
 {
     double start_time, end_time;
     int** a = new int* [n];
@@ -68,15 +68,17 @@ void parallel(int n, int k)
 #pragma omp parallel num_threads(k)
         {
 #pragma omp for
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+            for (int i = 0; i < n; i++)
             {
-                *(*(res + i) + j) = *(*(a + i) + j) + *(*(b + i) + j);
-                *(*(res + i) + j) = *(*(a + i) + j) - *(*(b + i) + j);
-                *(*(res + i) + j) = *(*(a + i) + j) * *(*(b + i) + j);
-                *(*(res + i) + j) = *(*(a + i) + j) / *(*(b + i) + j);
+                for (int j = 0; j < n; j++)
+                {
+                    *(*(res + i) + j) = *(*(a + i) + j) + *(*(b + i) + j);
+                    *(*(res + i) + j) = *(*(a + i) + j) - *(*(b + i) + j);
+                    *(*(res + i) + j) = *(*(a + i) + j) * *(*(b + i) + j);
+                    *(*(res + i) + j) = *(*(a + i) + j) / *(*(b + i) + j);
+                }
             }
-    }
+        }
     end_time = omp_get_wtime();
     for (int i = 0; i < n; i++)
     {
@@ -88,15 +90,33 @@ void parallel(int n, int k)
     delete a;
     delete b;
     delete res;
+    return end_time - start_time;
     
-    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, k);
+    //printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, k);
 }
 void Task4()
 {
     int n = 30000;
     printf("========== Задача #4 ==========\n");
-    consistent2(n);
-    parallel(n, 1);
-    parallel(n, 4);
-    parallel(n, 8);
+    int res = 1;
+    double avg_time = 0;
+    for (int i = 0; i < res; i++)
+        avg_time += consistent2(n);
+    avg_time /= res;
+    printf("Последовательный вариант\nВремя на замер времени %lf\n===============================\n", avg_time);
+    avg_time = 0;
+    for (int i = 0; i < res; i++)
+        avg_time += parallel(n, 1);
+    avg_time /= res;
+    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", avg_time, 1);
+    avg_time = 0;
+    for (int i = 0; i < res; i++)
+        avg_time += parallel(n, 4);
+    avg_time /= res;
+    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", avg_time, 4);
+    avg_time = 0;
+    for (int i = 0; i < res; i++)
+        avg_time += parallel(n, 8);
+    avg_time /= res;
+    printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", avg_time, 8);
 }
