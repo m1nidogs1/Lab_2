@@ -53,7 +53,7 @@ void parall(int n, int k)
     end_time = omp_get_wtime();
     printf("Параллельный вариант\nВремя на замер времени %lf\nКоличество потоков %d\n===============================\n", end_time - start_time, k);
 }
-void Task_3()
+void Task3()
 {
     int n = 100000000;
     printf("========== Задача #3 ==========\n");

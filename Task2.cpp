@@ -46,7 +46,7 @@ void Qsort_parallel(int a[], int L, int R, int k)
     }
 #pragma omp taskwait
 }
-void Task_2()
+void Task2()
 {
     int n = 100000000;
     int* a1 = new int[n];

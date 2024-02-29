@@ -7,21 +7,20 @@ void consistent2(int n)
     int** a = new int*[n];
     int** b = new int*[n];
     int** res = new int*[n];
-    start_time = omp_get_wtime();
+
     for (int i = 0; i < n; i++)
     {
         a[i] = new int[n];
         b[i] = new int[n];
         res[i] = new int[n];
     }
-    
-
     for (int i = 0; i < n; i++)
         for (int j=0;j<n;j++)
         {
             *(*(a+i)+j) = rand() % 100 + 1;
             *(*(b + i) + j) = rand() % 100 + 1;
         }
+    start_time = omp_get_wtime();
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
         {
@@ -49,10 +48,8 @@ void parallel(int n, int k)
     int** a = new int* [n];
     int** b = new int* [n];
     int** res = new int* [n];
-    start_time = omp_get_wtime();
-#pragma omp parallel num_threads(k)
-    {
-#pragma omp for
+
+
         for (int i = 0; i < n; i++)
         {
             a[i] = new int[n];
@@ -60,7 +57,6 @@ void parallel(int n, int k)
             res[i] = new int[n];
         }
         
-#pragma omp for
         for (int i = 0; i < n; i++)
 
             for (int j = 0; j < n; j++)
@@ -68,6 +64,9 @@ void parallel(int n, int k)
                 *(*(a + i) + j) = rand() % 100 + 1;
                 *(*(b + i) + j) = rand() % 100 + 1;
             }
+        start_time = omp_get_wtime();
+#pragma omp parallel num_threads(k)
+        {
 #pragma omp for
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
